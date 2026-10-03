@@ -1,4 +1,4 @@
-from linkedlist import LinkedList, add as LLadd, getNodeValue as LLgetNode, delete as LLdelete
+from linkedlist import LinkedList, add as LLadd, getNodeValue as LLgetNode, delete as LLdelete, length
 
 class Trie:
     root = None
@@ -133,72 +133,47 @@ def _findPrefixImpl(currentNode: TrieNode, word: str, n: int):
         j = current.value
         _findPrefixImpl(j, word + j.key, n-1)
         current  = current.nextNode
+
+#Ejercicio 6
+def inverted(T: Trie) -> bool:
+    word = ""
+    return _invertedImpl(T, T.root, word)
+
+def _invertedImpl(T: Trie, node: TrieNode, word: str):
+    if node.isEndOfWord:
+        if LLgetNode(T.root.children, node.key):
+            if search(T, word[::-1]):
+                return True
+    
+    i = node.children.head
+    while i:
+        if _invertedImpl(T, i.value, word + i.value.key):
+            return True
+        i = i.nextNode
+
+    return False
+
+
+#Ejercicio 7
+def autoComplete(T: Trie, s: str):
+    currentNode = T.root
+
+    for i in s:
+        node = LLgetNode(currentNode.children, i)
+
+        if node is None:
+            return None
+
+        currentNode = node
+
+    match = ""
+    return _autoCompleteImpl(T, currentNode, match)
+    
+def _autoCompleteImpl(T: Trie, node: TrieNode, match: str):
+    nextNode = node.children.head
+    
+    if length(node.children) > 1 or nextNode is None:
+        return match
+        
+    return _autoCompleteImpl(T, nextNode.value, match + nextNode.value.key)
             
-if __name__ == "__main__":
-
-    T = Trie()
-
-    insert(T, "casa")
-    insert(T, "caso")
-    insert(T, "cama")
-    insert(T, "camino")
-    insert(T, "casamiento")
-    insert(T, "perro")
-    insert(T, "perla")
-
-    print("Palabras con prefijo 'ca' y longitud 4:")
-    findPrefix(T, "ca", 4)
-
-    print("\nPalabras con prefijo 'ca' y longitud 5:")
-    findPrefix(T, "ca", 5)
-
-    print("\nPalabras con prefijo 'cas' y longitud 4:")
-    findPrefix(T, "cas", 4)
-
-    print("\nPalabras con prefijo 'per' y longitud 5:")
-    findPrefix(T, "per", 5)
-    
-
-    T1 = Trie()
-
-    insert(T1, "casa")
-    insert(T1, "caso")
-    insert(T1, "cama")
-    insert(T1, "camino")
-    insert(T1, "casamiento")
-    insert(T1, "perro")
-    insert(T1, "perla")
-
-    T2 = Trie()
-    
-    insert(T2, "casa")
-    insert(T2, "caso")
-    insert(T2, "cama")
-    insert(T2, "camino")
-    insert(T2, "casamiento")
-    insert(T2, "perro")
-    insert(T2, "perla")
-
-    T3 = Trie()
-    
-    insert(T3, "cama")
-    insert(T3, "casamiento")
-    insert(T3, "perro")
-    insert(T3, "camino")
-    insert(T3, "casa")
-    insert(T3, "perla")
-    insert(T3, "caso")
-
-    T4 = Trie()
-    
-    insert(T4, "chanchito feliz")
-    insert(T4, "felipe")
-    insert(T4, "perro")
-    insert(T4, "camino")
-    insert(T4, "ramon")
-    insert(T4, "marie")
-    insert(T4, "caso")
-
-    print(compareTrie(T1, T2))
-    print(compareTrie(T1, T3))
-    print(compareTrie(T1, T4))
